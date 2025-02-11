@@ -19,20 +19,16 @@ def get_image_pixels(image_paths):
     return np.vstack(pixels)
 
 def apply_kmeans(pixels, k=5):
-    # Convert to DataFrame
     df = pd.DataFrame(pixels, columns=["R", "G", "B"])
     
-    # Apply KMeans clustering
     kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
     kmeans.fit(df)
     
-    # Get centroid colors
     centroids = kmeans.cluster_centers_.astype(int)
     
     return centroids
 
 def plot_colors(centroids):
-    # Display the centroid colors
     plt.figure(figsize=(8, 2))
     
     for i, color in enumerate(centroids):
@@ -43,7 +39,7 @@ def plot_colors(centroids):
     plt.show()
 
 if __name__ == "__main__":
-    image_path = ["nature-hd-wallpaper.jpg"]  # Replace with your image path
+    image_path = ["nature-hd-wallpaper.jpg"]
     pixels = get_image_pixels(image_path)
     centroids = apply_kmeans(pixels, k=5)
     
