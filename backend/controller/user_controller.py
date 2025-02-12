@@ -19,5 +19,12 @@ def create_user(name, email, password):
     return new_user
 
 
-def update_user(user_id, name):
-    pass
+def update_user(user_id, data):
+    user = User.query.get(user_id)
+    
+    if "name" in data:
+        user.name = data["name"]
+
+    db.session.commit()
+
+    return user
