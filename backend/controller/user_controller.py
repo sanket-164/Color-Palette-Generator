@@ -1,11 +1,13 @@
 from model.User import User
-from sqlalchemy import or_
 from config import db
 import hashlib
 
 
 def find_user(user_id=-1, email=""):
-    return User.query.filter(or_(User.email == email, User.id == user_id)).first()
+    if user_id != -1 and email == "":
+        return User.query.filter_by(id=user_id).first()
+    elif user_id == -1 and email != "":
+        return User.query.filter_by(email=email).first()
 
 
 def create_user(name, email, password):
@@ -21,7 +23,7 @@ def create_user(name, email, password):
 
 def update_user(user_id, data):
     user = User.query.get(user_id)
-    
+
     if "name" in data:
         user.name = data["name"]
 

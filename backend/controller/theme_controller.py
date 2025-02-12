@@ -1,4 +1,4 @@
-from model.User import Theme
+from model.Theme import Theme
 from config import db
 
 def get_themes(user_id):
@@ -13,4 +13,14 @@ def add_theme(user_id, color_1, color_2, color_3, color_4, color_5):
     return new_theme
 
 def update_theme(theme_id, color_1, color_2, color_3, color_4, color_5):
-    pass
+    theme = Theme.query.get(theme_id)
+    
+    theme.color_1 = color_1
+    theme.color_2 = color_2
+    theme.color_3 = color_3
+    theme.color_4 = color_4
+    theme.color_5 = color_5
+
+    db.session.commit()
+
+    return theme

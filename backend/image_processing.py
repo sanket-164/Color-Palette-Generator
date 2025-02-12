@@ -1,24 +1,22 @@
-import cv2
+import io
 import numpy as np
 import pandas as pd
+from PIL import Image
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 
-def get_image_pixels(image_paths):
-    
-    pixels = []
+def get_image_pixels(images):
+    image_pixels = []
 
-    for image_path in image_paths:
-        # Read the image
-        image = cv2.imread(image_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert from BGR to RGB
-        
-        # Reshape the image into a 2D array of pixels
-        pixels.append(image.reshape(-1, 3))
+    for file in images:
+        if file:
+            image = Image.open(io.BytesIO(file.read()))  # Read image into PIL Image
+            image = image.convert("RGB")  # Ensure image is in RGB mode
+            image_pixels.append(np.array(image).reshape(-1, 3))
     
-    return np.vstack(pixels)
+    return np.vstack(image_pixels)
 
-def apply_kmeans(pixels, k=5):
+def generate_colors(pixels, k=5):
     df = pd.DataFrame(pixels, columns=["R", "G", "B"])
     
     kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
@@ -41,7 +39,7 @@ def plot_colors(centroids):
 if __name__ == "__main__":
     image_path = ["nature-hd-wallpaper.jpg"]
     pixels = get_image_pixels(image_path)
-    centroids = apply_kmeans(pixels, k=5)
+    centroids = generate_colors(pixels, k=5)
     
     print("Centroid Colors (RGB):")
     print(centroids)
