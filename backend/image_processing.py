@@ -1,7 +1,7 @@
 import io
 import numpy as np
 from PIL import Image
-from scipy.cluster.vq import kmeans2
+from sklearn.cluster import KMeans
 
 def get_image_pixels(images):
     image_pixels = []
@@ -14,10 +14,11 @@ def get_image_pixels(images):
     
     return np.vstack(image_pixels)
 
-def generate_colors(pixels, k=5):
-    pixels = np.array(pixels, dtype=np.float32)  # Ensure correct data type for kmeans
-    centroids, _ = kmeans2(data=pixels, k=k)
-    centroids = centroids.astype(int)  # Convert to int for color values
+def generate_colors(pixels, k=5):    
+    kmeans = KMeans(n_clusters=k)
+    kmeans.fit(pixels)
+    
+    centroids = kmeans.cluster_centers_.astype(int)
     
     hexa_values = []
 
@@ -33,7 +34,3 @@ def generate_colors(pixels, k=5):
         hexa_values.append(f"#{red}{green}{blue}")
 
     return hexa_values
-
-if __name__ == "__main__":
-    pass
-
