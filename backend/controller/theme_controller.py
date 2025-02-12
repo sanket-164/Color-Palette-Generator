@@ -1,6 +1,9 @@
 from model.Theme import Theme
 from config import db
 
+def get_theme(theme_id):
+    return Theme.query.filter_by(id=theme_id).first()
+
 def get_themes(user_id):
     return Theme.query.filter_by(user_id=user_id)
 
@@ -24,3 +27,7 @@ def update_theme(theme_id, color_1, color_2, color_3, color_4, color_5):
     db.session.commit()
 
     return theme
+
+def delete_theme(theme):
+    db.session.delete(theme)  # Delete the theme
+    db.session.commit()

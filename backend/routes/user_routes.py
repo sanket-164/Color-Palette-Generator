@@ -1,12 +1,28 @@
 from flask import Blueprint, jsonify, request
 from controller.user_controller import find_user, update_user
-from controller.theme_controller import get_themes, add_theme, update_theme
+from controller.theme_controller import get_theme, get_themes, add_theme, update_theme, delete_theme
 from middleware.jwt_authentication import verify_jwt
 from image_processing import get_image_pixels, generate_colors
 
 
 user_routes = Blueprint("user_routes", __name__)
 
+
+def generate_theme_response(message, theme):
+    response = {
+            "message": message,
+            "theme": {
+                "theme_id": theme.id,
+                "user_id": theme.user_id,
+                "color_1": theme.color_1,
+                "color_2": theme.color_2,
+                "color_3": theme.color_3,
+                "color_4": theme.color_4,
+                "color_5": theme.color_5,
+            },
+        }
+
+    return response
 
 @user_routes.route("/", methods=["GET"])
 def user_hello():
@@ -31,7 +47,7 @@ def user_profile():
         user = update_user(user_id=current_user_id, data=request.get_json())
 
         response = {
-            "message": "User Profile",
+            "message": "Profile Updated",
             "user": {"id": user.id, "name": user.name, "email": user.email},
         }
 
@@ -51,47 +67,21 @@ def generate_theme():
         image_pixels = get_image_pixels(request.files.getlist("images"))
         colors = generate_colors(image_pixels, k=5)
 
-        hexa_values = []
-
-        for color in colors:
-            red = hex(color[0]).split("0x")[1].rstrip()
-            green = hex(color[1]).split("0x")[1].rstrip()
-            blue = hex(color[2]).split("0x")[1].rstrip()
-
-            red = red if len(red) else red + "0"
-            green = green if len(green) else green + "0"
-            blue = blue if len(blue) else blue + "0"
-
-            hexa_values.append(f"#{red}{green}{blue}")
-
         new_theme = add_theme(
             user_id=current_user_id,
-            color_1=hexa_values[0],
-            color_2=hexa_values[1],
-            color_3=hexa_values[2],
-            color_4=hexa_values[3],
-            color_5=hexa_values[4],
+            color_1=colors[0],
+            color_2=colors[1],
+            color_3=colors[2],
+            color_4=colors[3],
+            color_5=colors[4],
         )
 
-        response = {
-            "message": "Theme Created",
-            "theme": {
-                "theme_id": new_theme.id,
-                "user_id": new_theme.user_id,
-                "color_1": new_theme.color_1,
-                "color_2": new_theme.color_2,
-                "color_3": new_theme.color_3,
-                "color_4": new_theme.color_4,
-                "color_5": new_theme.color_5,
-            },
-        }
-
-        return jsonify(response), 200
+        return jsonify(generate_theme_response("Theme Created", new_theme)), 200
     except Exception as e:
         return jsonify({"error": e}), 500
 
 
-@user_routes.route("/theme", methods=["GET", "PATCH"])
+@user_routes.route("/theme", methods=["GET", "PATCH", "DELETE"])
 def user_theme():
     current_user_id = verify_jwt()
     if request.method == "GET":
@@ -153,17 +143,16 @@ def user_theme():
             color_5=data["color_5"],
         )
 
-        response = {
-            "message": "Theme Updated",
-            "theme": {
-                "theme_id": theme.id,
-                "user_id": theme.user_id,
-                "color_1": theme.color_1,
-                "color_2": theme.color_2,
-                "color_3": theme.color_3,
-                "color_4": theme.color_4,
-                "color_5": theme.color_5,
-            },
-        }
+        return jsonify(generate_theme_response("Theme Updated", theme)), 200
+    
+    if request.method == 'DELETE':
+        data = request.get_json()
 
-        return jsonify(response), 200
+        theme = get_theme(data['theme_id'])
+
+        if not theme:
+            return jsonify({"message": "Theme not found"}), 404
+        
+        delete_theme(theme)
+
+        return jsonify(generate_theme_response("Theme Deleted", theme)), 200
