@@ -1,13 +1,15 @@
 import hashlib
 from flask import Blueprint, jsonify, request
 from controller.user_controller import create_user, find_user
+from flask_jwt_extended import create_access_token
+
 
 auth_routes = Blueprint("auth_routes", __name__)
 
 
 @auth_routes.route("/", methods=["GET"])
-def get_user():
-    return jsonify({"message": "Hello from user"}), 200
+def auth_hello():
+    return jsonify({"message": "Hello from authentication"}), 200
 
 
 @auth_routes.route("/login", methods=["POST"])
@@ -17,7 +19,7 @@ def user_login():
     if not user or "email" not in user or "password" not in user:
         return jsonify({"error": "Invalid input"}), 400
 
-    existing_user = find_user(user["email"])
+    existing_user = find_user(email=user["email"])
 
     if (
         existing_user
@@ -28,12 +30,9 @@ def user_login():
 
     response = {
         "message": "Login successfully",
-        "user": {
-            "id": existing_user.id,
-            "name": existing_user.name,
-            "email": existing_user.email,
-        },
+        "jwt_token": create_access_token(identity=str(existing_user.id)),
     }
+
     return jsonify(response), 201
 
 
@@ -55,4 +54,5 @@ def register_user():
         "message": "User created",
         "user": {"id": user.id, "name": user.name, "email": user.email},
     }
+    
     return jsonify(response), 201

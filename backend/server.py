@@ -1,8 +1,15 @@
+from flask import jsonify
 from config import app, db
 from routes.auth_routes import auth_routes
+from routes.user_routes import user_routes
 # from image_processing import get_image_pixels, apply_kmeans
 
+@app.route("/")
+def get():
+    return jsonify({"message": "Hello world!"}), 200
+    
 app.register_blueprint(auth_routes, url_prefix='/auth')
+app.register_blueprint(user_routes, url_prefix='/user')
 
 # @app.route("/upload", methods=["POST"])
 # def upload_image():
