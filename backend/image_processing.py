@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 
 def get_image_pixels(images):
     image_pixels = []
@@ -26,16 +25,6 @@ def generate_colors(pixels, k=5):
     
     return centroids
 
-def plot_colors(centroids):
-    plt.figure(figsize=(8, 2))
-    
-    for i, color in enumerate(centroids):
-        plt.subplot(1, len(centroids), i+1)
-        plt.axis("off")
-        plt.imshow([[color / 255]])
-    
-    plt.show()
-
 if __name__ == "__main__":
     image_path = ["nature-hd-wallpaper.jpg"]
     pixels = get_image_pixels(image_path)
@@ -43,5 +32,3 @@ if __name__ == "__main__":
     
     print("Centroid Colors (RGB):")
     print(centroids)
-    
-    plot_colors(centroids)
