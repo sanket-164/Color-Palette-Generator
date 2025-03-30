@@ -1,8 +1,7 @@
 import hashlib
 from flask import Blueprint, jsonify, request
-from controller.user_controller import create_user, find_user
+from controller.user_controller import create_user, find_user_by_email
 from flask_jwt_extended import create_access_token
-
 
 auth_routes = Blueprint("auth_routes", __name__)
 
@@ -16,18 +15,15 @@ def auth_hello():
 def user_login():
     user = request.get_json()
 
+
     if not user or "email" not in user or "password" not in user:
         return jsonify({"error": "Invalid input"}), 400
 
-    existing_user = find_user(email=user["email"])
+    existing_user = find_user_by_email(email=user["email"])
 
-    if (
-        existing_user
-        and existing_user.password
-        != hashlib.sha256(user["password"].encode()).hexdigest()
-    ):
+    if existing_user == None or existing_user.password != hashlib.sha256(user["password"].encode()).hexdigest():
         return jsonify({"error": "Wrong credentials"}), 400
-
+    
     response = {
         "message": "Login successfully",
         "jwt_token": create_access_token(identity=str(existing_user.id)),
@@ -43,7 +39,7 @@ def register_user():
     if not user or "name" not in user or "email" not in user:
         return jsonify({"error": "Invalid input"}), 400
 
-    existing_user = find_user(user["email"])
+    existing_user = find_user_by_email(user["email"])
 
     if existing_user:
         return jsonify({"error": "Email already exist"}), 400

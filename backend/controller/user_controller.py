@@ -3,11 +3,12 @@ from config import db
 import hashlib
 
 
-def find_user(user_id=-1, email=""):
-    if user_id != -1 and email == "":
-        return User.query.filter_by(id=user_id).first()
-    elif user_id == -1 and email != "":
-        return User.query.filter_by(email=email).first()
+def find_user_by_id(user_id):
+    return User.query.filter_by(id=user_id).first()
+
+
+def find_user_by_email(email):
+    return User.query.filter_by(email=email).first()
 
 
 def create_user(name, email, password):

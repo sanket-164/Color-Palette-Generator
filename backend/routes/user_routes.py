@@ -1,12 +1,10 @@
 from flask import Blueprint, jsonify, request
-from controller.user_controller import find_user, update_user
+from controller.user_controller import find_user_by_id, update_user
 from controller.theme_controller import get_theme, get_themes, add_theme, update_theme, delete_theme
 from middleware.jwt_authentication import verify_jwt
 from image_processing import get_image_pixels, generate_colors
 
-
 user_routes = Blueprint("user_routes", __name__)
-
 
 def generate_theme_response(message, theme):
     response = {
@@ -34,7 +32,7 @@ def user_profile():
     current_user_id = verify_jwt()
     if request.method == "GET":
 
-        user = find_user(user_id=current_user_id)
+        user = find_user_by_id(user_id=current_user_id)
 
         response = {
             "message": "User Profile",
@@ -56,7 +54,7 @@ def user_profile():
 
 @user_routes.route("/generate-theme", methods=["POST"])
 def generate_theme():
-    current_user_id = verify_jwt()
+    # current_user_id = verify_jwt()
     try:
         if "images" not in request.files:
             return "No file part", 400
@@ -68,17 +66,18 @@ def generate_theme():
         colors = generate_colors(image_pixels, k=5)
 
         new_theme = add_theme(
-            user_id=current_user_id,
+            user_id=1,
             color_1=colors[0],
             color_2=colors[1],
             color_3=colors[2],
             color_4=colors[3],
-            color_5=colors[4],
+            color_5=colors[4]
         )
 
         return jsonify(generate_theme_response("Theme Created", new_theme)), 200
     except Exception as e:
-        return jsonify({"error": e}), 500
+        print(str(e))
+        return jsonify({"error": str(e) }), 500
 
 
 @user_routes.route("/theme", methods=["GET", "PATCH", "DELETE"])
