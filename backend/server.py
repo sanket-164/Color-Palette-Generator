@@ -5,6 +5,15 @@ from routes.user_routes import user_routes
 
 @app.route("/")
 def get():
+    """
+    A simple hello endpoint.
+    ---
+    responses:
+      200:
+        description: Returns a greeting
+        examples:
+          application/json: { "message": "Hello, world!" }
+    """
     return jsonify({"message": "Hello world!"}), 200
     
 app.register_blueprint(auth_routes, url_prefix='/auth')
