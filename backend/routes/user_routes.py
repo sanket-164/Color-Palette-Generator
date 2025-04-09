@@ -12,11 +12,11 @@ def generate_theme_response(message, theme):
             "theme": {
                 "theme_id": theme.id,
                 "user_id": theme.user_id,
-                "color_1": theme.color_1,
-                "color_2": theme.color_2,
-                "color_3": theme.color_3,
-                "color_4": theme.color_4,
-                "color_5": theme.color_5,
+                "background_color": theme.background_color,
+                "surface_color": theme.surface_color,
+                "text_color": theme.text_color,
+                "primary_color": theme.primary_color,
+                "secondary_color": theme.secondary_color,
             },
         }
 
@@ -148,11 +148,11 @@ def generate_theme():
 
         new_theme = add_theme(
             user_id=1,
-            color_1=colors[0],
-            color_2=colors[1],
-            color_3=colors[2],
-            color_4=colors[3],
-            color_5=colors[4]
+            background_color=colors[0],
+            surface_color=colors[1],
+            text_color=colors[2],
+            primary_color=colors[3],
+            secondary_color=colors[4]
         )
 
         return jsonify(generate_theme_response("Theme Created", new_theme)), 200
@@ -184,11 +184,11 @@ def get_user_themes():
             {
                 "theme_id": theme.id,
                 "user_id": theme.user_id,
-                "color_1": theme.color_1,
-                "color_2": theme.color_2,
-                "color_3": theme.color_3,
-                "color_4": theme.color_4,
-                "color_5": theme.color_5,
+                "background_color": theme.background_color,
+                "surface_color": theme.surface_color,
+                "text_color": theme.text_color,
+                "primary_color": theme.primary_color,
+                "secondary_color": theme.secondary_color,
             }
         )
 
@@ -218,23 +218,23 @@ def update_user_theme():
           type: object
           required:
             - theme_id
-            - color_1
-            - color_2
-            - color_3
-            - color_4
-            - color_5
+            - background_color
+            - surface_color
+            - text_color
+            - primary_color
+            - secondary_color
           properties:
             theme_id:
               type: integer
-            color_1:
+            background_color:
               type: string
-            color_2:
+            surface_color:
               type: string
-            color_3:
+            text_color:
               type: string
-            color_4:
+            primary_color:
               type: string
-            color_5:
+            secondary_color:
               type: string
     responses:
       200:
@@ -247,11 +247,11 @@ def update_user_theme():
 
     required_fields = [
         "theme_id",
-        "color_1",
-        "color_2",
-        "color_3",
-        "color_4",
-        "color_5",
+        "background_color",
+        "surface_color",
+        "text_color",
+        "primary_color",
+        "secondary_color",
     ]
 
     if not all(field in data for field in required_fields):
@@ -269,11 +269,11 @@ def update_user_theme():
 
     theme = update_theme(
         theme_id=data["theme_id"],
-        color_1=data["color_1"],
-        color_2=data["color_2"],
-        color_3=data["color_3"],
-        color_4=data["color_4"],
-        color_5=data["color_5"],
+        background_color=data["background_color"],
+        surface_color=data["surface_color"],
+        text_color=data["text_color"],
+        primary_color=data["primary_color"],
+        secondary_color=data["secondary_color"],
     )
 
     return jsonify(generate_theme_response("Theme Updated", theme)), 200
