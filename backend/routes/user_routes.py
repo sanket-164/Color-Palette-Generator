@@ -144,8 +144,7 @@ def generate_theme():
         if request.files.getlist("images")[0].filename == "":
             return jsonify({"error": "Did not get any Image"}), 400
 
-        image_pixels = get_image_pixels(request.files.getlist("images"))
-        colors = generate_colors(image_pixels, k=5)
+        colors = generate_colors(request.files.getlist("images"))
 
         new_theme = add_theme(
             user_id=1,

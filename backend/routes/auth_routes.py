@@ -2,7 +2,6 @@ import hashlib
 from flask import Blueprint, jsonify, request
 from controller.user_controller import create_user, find_user_by_email
 from flask_jwt_extended import create_access_token
-from flasgger import swag_from
 
 auth_routes = Blueprint("auth_routes", __name__)
 
