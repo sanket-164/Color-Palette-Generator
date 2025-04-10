@@ -94,11 +94,16 @@ def update_user_profile():
           properties:
             name:
               type: string
-            email:
-              type: string
     responses:
       200:
         description: Profile updated
+        examples:
+          application/json:
+            message: Profile Updated
+            user:
+              id: "123"
+              name: John Doe
+              email: john@example.com
     """
     current_user_id = verify_jwt()
     user = update_user(user_id=current_user_id, data=request.get_json())
@@ -129,17 +134,35 @@ def generate_theme():
         required: true
         description: List of images to extract colors from
     responses:
-      200:
+      201:
         description: Theme created successfully
+        examples:
+          application/json:
+              message: "User Themes"
+              theme:
+                  theme_id: 1
+                  user_id: 1
+                  background_color: "#12100d"
+                  surface_color: "#05192d"
+                  text_color: "#b2cbd0"
+                  primary_color: "#227f9c"
+                  secondary_color: "#cc1314"
       400:
-        description: Invalid image upload
+        description: Invalid image upload or no images provided
+        examples:
+          application/json:
+              error: "Did not get any Image"
       500:
         description: Server error
+        examples:
+          application/json:
+              error: "Server Error"
     """
-    # current_user_id = verify_jwt()
+    current_user_id = verify_jwt()
+
     try:
         if "images" not in request.files:
-            return "No file part", 400
+            return jsonify({"error": "Did not get any Image"}), 400
 
         if request.files.getlist("images")[0].filename == "":
             return jsonify({"error": "Did not get any Image"}), 400
@@ -147,7 +170,7 @@ def generate_theme():
         colors = generate_colors(request.files.getlist("images"))
 
         new_theme = add_theme(
-            user_id=1,
+            user_id=current_user_id,
             background_color=colors[0],
             surface_color=colors[1],
             text_color=colors[2],
@@ -155,7 +178,7 @@ def generate_theme():
             secondary_color=colors[4]
         )
 
-        return jsonify(generate_theme_response("Theme Created", new_theme)), 200
+        return jsonify(generate_theme_response("Theme Created", new_theme)), 201
     except Exception as e:
         print(str(e))
         return jsonify({"error": str(e) }), 500
@@ -163,16 +186,39 @@ def generate_theme():
 @user_routes.route("/theme", methods=["GET"])
 def get_user_themes():
     """
-    Get all themes for the current user
+    Get all themes for the current user.
     ---
     tags:
       - Theme
     summary: Get user themes
+    description: Retrieve a list of all themes associated with the currently authenticated user.
     security:
       - BearerAuth: []
     responses:
       200:
         description: List of themes
+        examples:
+          application/json:
+              message: "User Themes"
+              themes:
+                - theme_id: 1
+                  user_id: 1
+                  background_color: "#12100d"
+                  surface_color: "#05192d"
+                  text_color: "#b2cbd0"
+                  primary_color: "#227f9c"
+                  secondary_color: "#cc1314"
+                - theme_id: 2
+                  user_id: 1
+                  background_color: "#12100d"
+                  surface_color: "#05192d"
+                  text_color: "#b2cbd0"
+                  primary_color: "#227f9c"
+                  secondary_color: "#cc1314"
+      401:
+        description: Unauthorized - Invalid or missing JWT token
+      500:
+        description: Internal server error
     """
     current_user_id = verify_jwt()
     user_themes = get_themes(user_id=current_user_id)
@@ -239,8 +285,23 @@ def update_user_theme():
     responses:
       200:
         description: Theme updated
+        examples:
+          application/json:
+              message: "Theme Updated"
+              theme:
+                  theme_id: 0
+                  user_id: 1
+                  background_color: "#12100d"
+                  surface_color: "#05192d"
+                  text_color: "#b2cbd0"
+                  primary_color: "#227f9c"
+                  secondary_color: "#cc1314"
       400:
         description: Missing required fields
+        examples:
+          application/json:
+              error: "Missing required fields"
+              missing_fields: []
     """
     verify_jwt()
     data = request.get_json()
@@ -258,7 +319,7 @@ def update_user_theme():
         return (
             jsonify(
                 {
-                    "message": "Missing required fields",
+                    "error": "Missing required fields",
                     "missing_fields": [
                         field for field in required_fields if field not in data
                     ],
@@ -303,8 +364,22 @@ def delete_user_theme():
     responses:
       200:
         description: Theme deleted
+        examples:
+          application/json:
+              message: "Theme Deleted"
+              theme:
+                  theme_id: 0
+                  user_id: 1
+                  background_color: "#12100d"
+                  surface_color: "#05192d"
+                  text_color: "#b2cbd0"
+                  primary_color: "#227f9c"
+                  secondary_color: "#cc1314"
       404:
         description: Theme not found
+        examples:
+          application/json:
+              error: "Theme not found"
     """
     verify_jwt()
     data = request.get_json()

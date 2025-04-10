@@ -15,8 +15,6 @@ def auth_hello():
       - Auth
     summary: Health check for auth service
     description: Returns a greeting message from the authentication service.
-    security:
-      - BearerAuth: []
     responses:
       200:
         description: Successful response
@@ -57,7 +55,10 @@ def user_login():
             message: Login successfully
             jwt_token: "<JWT_TOKEN>"
       400:
-        description: Invalid input or wrong credentials
+        description: Wrong credentials or Invalid input 
+        examples:
+          application/json:
+            error: Wrong credentials
     """
     user = request.get_json()
 
@@ -115,7 +116,10 @@ def register_user():
               name: John Doe
               email: john@example.com
       400:
-        description: Email already exist or input invalid
+        description: Email already exists or invalid input
+        examples:
+          application/json:
+            error: Email already exist
     """
     user = request.get_json()
 
