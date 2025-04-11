@@ -68,6 +68,9 @@ def get_user_profile():
 
     user = find_user_by_id(user_id=current_user_id)
 
+    if(user is None):
+        return jsonify({"error": "User not found"}), 404
+
     response = {
         "message": "User Profile",
         "user": {"id": user.id, "name": user.name, "email": user.email},
@@ -106,6 +109,12 @@ def update_user_profile():
               email: john@example.com
     """
     current_user_id = verify_jwt()
+
+    user = find_user_by_id(user_id=current_user_id)
+
+    if(user is None):
+        return jsonify({"error": "User not found"}), 404
+    
     user = update_user(user_id=current_user_id, data=request.get_json())
 
     response = {
@@ -161,24 +170,29 @@ def generate_theme():
     current_user_id = verify_jwt()
 
     try:
-        if "images" not in request.files:
-            return jsonify({"error": "Did not get any Image"}), 400
+      user = find_user_by_id(user_id=current_user_id)
 
-        if request.files.getlist("images")[0].filename == "":
-            return jsonify({"error": "Did not get any Image"}), 400
+      if(user is None):
+          return jsonify({"error": "User not found"}), 404
+      
+      if "images" not in request.files:
+          return jsonify({"error": "Did not get any Image"}), 400
 
-        colors = generate_colors(request.files.getlist("images"))
+      if request.files.getlist("images")[0].filename == "":
+          return jsonify({"error": "Did not get any Image"}), 400
 
-        new_theme = add_theme(
-            user_id=current_user_id,
-            background_color=colors[0],
-            surface_color=colors[1],
-            text_color=colors[2],
-            primary_color=colors[3],
-            secondary_color=colors[4]
-        )
+      colors = generate_colors(request.files.getlist("images"))
 
-        return jsonify(generate_theme_response("Theme Created", new_theme)), 201
+      new_theme = add_theme(
+          user_id=current_user_id,
+          background_color=colors[0],
+          surface_color=colors[1],
+          text_color=colors[2],
+          primary_color=colors[3],
+          secondary_color=colors[4]
+      )
+
+      return jsonify(generate_theme_response("Theme Created", new_theme)), 201
     except Exception as e:
         print(str(e))
         return jsonify({"error": str(e) }), 500
@@ -221,6 +235,12 @@ def get_user_themes():
         description: Internal server error
     """
     current_user_id = verify_jwt()
+    
+    user = find_user_by_id(user_id=current_user_id)
+
+    if(user is None):
+      return jsonify({"error": "User not found"}), 404
+    
     user_themes = get_themes(user_id=current_user_id)
 
     themes = []
@@ -327,6 +347,11 @@ def update_user_theme():
             ),
             400,
         )
+    
+    theme = get_theme(data['theme_id'])
+
+    if not theme:
+        return jsonify({"message": "Theme not found"}), 404
 
     theme = update_theme(
         theme_id=data["theme_id"],
