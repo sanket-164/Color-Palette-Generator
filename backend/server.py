@@ -1,5 +1,5 @@
 from flask import jsonify
-from config import app, db
+from config import app, db, PORT
 from routes.auth_routes import auth_routes
 from routes.user_routes import user_routes
 
@@ -22,4 +22,4 @@ app.register_blueprint(user_routes, url_prefix='/user')
 if __name__ == "__main__":
     app.app_context().push()
     db.create_all()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=PORT, debug=True)

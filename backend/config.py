@@ -11,10 +11,10 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = os.getenv("SERVER_SECRET")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SECRET_KEY"] = os.getenv("SERVER_SECRET") or "sanket_is_legend"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") or "sqlite:///database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET")
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET") or "sanket_is_legend"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
 swagger = Swagger(app, template={
@@ -40,3 +40,5 @@ cors = CORS(app)
 db = SQLAlchemy(app)
 
 jwt = JWTManager(app)
+
+PORT = os.getenv('PORT') or 5000
