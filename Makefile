@@ -9,10 +9,10 @@ pull-image:
 
 start-backend:
 	 @if docker ps -a --format '{{.Names}}' | grep -q "^$(CONTAINER_NAME)$$"; then \
-                echo "Starting existing RabbitMQ container..."; \
+                echo "Starting existing backend container..."; \
                 docker start $(CONTAINER_NAME); \
         else \
-                echo "Creating new RabbitMQ container..."; \
+                echo "Creating new backend container..."; \
                 docker run --name $(CONTAINER_NAME) \
                         -d -p $(PORT):$(CONTAINER_INTERNAL_PORT) \
                         $(IMAGE); \
