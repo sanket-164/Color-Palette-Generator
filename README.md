@@ -1,12 +1,10 @@
 # 🎨 AI-Powered Color Palette Generator
 
-A machine learning-based web app that generates custom color palettes from **uploaded images** or **text descriptions**.  
-Built with **Next.js** (frontend) and **Flask** (backend), using **K-Means Clustering** for image-based color extraction.
+A machine learning-based web app that generates custom color palettes from **uploaded images**. Built with **Next.js** (frontend) and **Flask** (backend), using **K-Means Clustering** for image-based color extraction.
 
 ## Features
 
 - Upload an image and extract dominant colors using K-Means clustering.
-- Input a text description to generate a theme-based color palette (e.g., "sunset", "pastel").
 - Copy HEX codes, download palettes, or save them for future use.
 - Modern UI built with React (Next.js).
 - Fast backend APIs powered by Flask and Python.
