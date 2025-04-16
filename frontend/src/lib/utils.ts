@@ -13,11 +13,11 @@ export function getAxiosInstance(): AxiosInstance {
     return axiosInstance;
   }
   axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URI,
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URI || "http://127.0.0.1:5000",
     headers: {
       "Content-Type": "application/json",
     },
-    url: process.env.NEXT_PUBLIC_BACKEND_URI,
+    url: process.env.NEXT_PUBLIC_BACKEND_URI || "http://127.0.0.1:5000",
   });
   return axiosInstance;
 }

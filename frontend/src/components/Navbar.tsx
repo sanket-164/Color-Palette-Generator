@@ -9,7 +9,9 @@ const Navbar = async () => {
     <nav className="py-4 px-2 shadow-md w-full">
       <div className="w-full flex items-center justify-between">
         {/* left side */}
-        <h1 className="text-2xl font-extrabold">ThemeFI</h1>
+        <h1 className="text-2xl font-extrabold ml-3">
+          <Link href="/">ThemeFI</Link>
+        </h1>
         {/* right side */}
         <div className="flex items-center gap-2">
           <Button variant="link">
