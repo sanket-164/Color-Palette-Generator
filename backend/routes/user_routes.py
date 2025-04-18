@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from controller.user_controller import find_user_by_id, update_user
 from controller.theme_controller import get_theme, get_themes, add_theme, update_theme, delete_theme
 from middleware.jwt_authentication import verify_jwt
-from image_processing import get_image_pixels, generate_colors
+from image_processing import generate_colors
 
 user_routes = Blueprint("user_routes", __name__)
 

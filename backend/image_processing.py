@@ -51,11 +51,17 @@ def get_image_pixels(images):
 
     for file in images:
         if file:
-            image = Image.open(io.BytesIO(file.read()))  # Read image into PIL Image
-            image = image.convert("RGB")  # Ensure image is in RGB mode
+            image = Image.open(io.BytesIO(file.read()))
+            image = image.convert("RGB")
+            
+            # Resize to half (2x compression)
+            width, height = image.size
+            image = image.resize((width // 2, height // 2), Image.Resampling.LANCZOS)
+            
             image_pixels.append(np.array(image).reshape(-1, 3))
-    
+
     return np.vstack(image_pixels)
+
 
 def rgb_to_hex(rgb):
     """Convert an RGB tuple to a hex color string."""
