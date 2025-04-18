@@ -141,7 +141,16 @@ def generate_theme():
         name: images
         type: file
         required: true
+        collectionFormat: multi
         description: List of images to extract colors from
+      - in: formData
+        name: compress
+        type: boolean
+        required: false
+        enum:
+          - "true"
+          - "false"
+        description: Whether to compress images before processing default is true
     responses:
       201:
         description: Theme created successfully
@@ -181,7 +190,7 @@ def generate_theme():
       if request.files.getlist("images")[0].filename == "":
           return jsonify({"error": "Did not get any Image"}), 400
 
-      colors = generate_colors(request.files.getlist("images"))
+      colors = generate_colors(request.files.getlist("images"), request.form.get("compress", "true").lower() == "true")
 
       new_theme = add_theme(
           user_id=current_user_id,
