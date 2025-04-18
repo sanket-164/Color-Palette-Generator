@@ -46,16 +46,23 @@ def generate_attractive_theme(colors):
 
     return theme_colors
 
-def get_image_pixels(images):
+def get_image_pixels(images, compress):
     image_pixels = []
 
     for file in images:
         if file:
-            image = Image.open(io.BytesIO(file.read()))  # Read image into PIL Image
-            image = image.convert("RGB")  # Ensure image is in RGB mode
+            image = Image.open(io.BytesIO(file.read()))
+            image = image.convert("RGB")
+            
+            # Resize to half (2x compression)
+            if(compress):
+                width, height = image.size
+                image = image.resize((width // 2, height // 2), Image.Resampling.LANCZOS)
+            
             image_pixels.append(np.array(image).reshape(-1, 3))
-    
+
     return np.vstack(image_pixels)
+
 
 def rgb_to_hex(rgb):
     """Convert an RGB tuple to a hex color string."""
@@ -66,9 +73,9 @@ def calculate_brightness(rgb):
     r, g, b = rgb
     return 0.299 * r + 0.587 * g + 0.114 * b
 
-def generate_colors(images):
+def generate_colors(images, compress=True):
 
-    pixels = get_image_pixels(images)
+    pixels = get_image_pixels(images, compress)
 
     kmeans = KMeans(n_clusters=5)
 

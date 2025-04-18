@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from controller.user_controller import find_user_by_id, update_user
 from controller.theme_controller import get_theme, get_themes, add_theme, update_theme, delete_theme
 from middleware.jwt_authentication import verify_jwt
-from image_processing import get_image_pixels, generate_colors
+from image_processing import generate_colors
 
 user_routes = Blueprint("user_routes", __name__)
 
@@ -141,7 +141,16 @@ def generate_theme():
         name: images
         type: file
         required: true
+        collectionFormat: multi
         description: List of images to extract colors from
+      - in: formData
+        name: compress
+        type: boolean
+        required: false
+        enum:
+          - "true"
+          - "false"
+        description: Whether to compress images before processing default is true
     responses:
       201:
         description: Theme created successfully
@@ -181,7 +190,7 @@ def generate_theme():
       if request.files.getlist("images")[0].filename == "":
           return jsonify({"error": "Did not get any Image"}), 400
 
-      colors = generate_colors(request.files.getlist("images"))
+      colors = generate_colors(request.files.getlist("images"), request.form.get("compress", "true").lower() == "true")
 
       new_theme = add_theme(
           user_id=current_user_id,
