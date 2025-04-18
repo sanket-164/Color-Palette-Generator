@@ -110,6 +110,3 @@ A machine learning-based web app that generates custom color palettes from **upl
 ## 📄 License
 
 MIT License
-```
-
-Let me know if you'd like to turn this into a live project structure with boilerplate code too.
