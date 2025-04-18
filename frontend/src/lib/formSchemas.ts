@@ -33,9 +33,12 @@ export const LoginFormSchema = z.object({
 
 // image upload
 export const CreateThemeFormSchema = z.object({
-  image: z.instanceof(File).refine((file) => {
-    return file.size < 2 * 1024 * 1024; // 2MB
-  }),
+  images: z.array(
+    z.instanceof(File).refine((file) => {
+      return file.size < 2 * 1024 * 1024; // 2MB
+    })
+  ),
+  compression: z.boolean().optional(),
 });
 
 export const EditThemeFormSchema = z.object({

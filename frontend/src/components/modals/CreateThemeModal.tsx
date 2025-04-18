@@ -21,10 +21,11 @@ const CreateThemeModal = () => {
     setLoading(isPending);
   }, [isPending, setLoading]);
 
-  function handleUpload(file: File) {
+  function handleUpload(file: File[], compress: boolean) {
     mutate(
       {
-        image: file,
+        images: file,
+        compression: compress,
       },
       {
         onSuccess: () => {
@@ -48,7 +49,7 @@ const CreateThemeModal = () => {
           <div className="loader" />
         </div>
       ) : (
-        <ImageUploader handleImageChange={handleUpload} />
+        <ImageUploader onSubmit={handleUpload} />
       )}
     </Modal>
   );

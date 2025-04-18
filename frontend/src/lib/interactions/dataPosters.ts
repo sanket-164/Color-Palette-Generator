@@ -64,7 +64,10 @@ export class ThemeFns {
   static async generateTheme(data: z.infer<typeof CreateThemeFormSchema>) {
     try {
       const formData = new FormData();
-      formData.append("images", data.image);
+      for (const file of data.images) {
+        formData.append("images", file);
+      }
+      formData.append("compression", String(data.compression));
       const { data: resp } = await axiosInstance.post(
         "/user/generate-theme",
         formData,

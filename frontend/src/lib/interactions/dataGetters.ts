@@ -14,7 +14,6 @@ export class ThemeGetterFns {
           Authorization: `Bearer ${cookies.get(TOKEN_COOKIE_KEY)}`,
         },
       });
-      console.log(data);
       return {
         message: "Themes fetched successfully",
         success: true,

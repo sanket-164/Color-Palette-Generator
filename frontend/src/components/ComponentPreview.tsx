@@ -1,4 +1,18 @@
 import React, { useState } from "react";
+import {
+  ChevronDown,
+  PaintBucket,
+  Check,
+  Save,
+  Palette,
+  Undo,
+  Lock,
+  Unlock,
+  Copy,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,24 +56,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ChevronDown,
-  PaintBucket,
-  Check,
-  Save,
-  Palette,
-  Undo,
-  Lock,
-  Unlock,
-  Copy,
-} from "lucide-react";
-import { toast } from "sonner";
 import { DialogHeader, DialogTitle } from "./ui/dialog";
+import { ThemeFns } from "@/lib/interactions/dataPosters";
+import useModal from "@/store/useModal";
+import useRevalidation from "@/store/useRevalidation";
 
-// Mock implementation of the zod schema
-const validateHexColor = (color) => {
+const validateHexColor = (color: string | number) => {
   const regex = /^#[0-9A-F]{6}$/i;
-  return regex.test(color);
+  return regex.test(String(color));
 };
 
 const ComponentPreview = ({
@@ -81,6 +85,11 @@ const ComponentPreview = ({
     surface_color: false,
     text_color: false,
   });
+  const { isPending, mutate } = useMutation({
+    mutationFn: ThemeFns.updateTheme,
+  });
+  const { closeModal } = useModal();
+  const revalidate = useRevalidation();
 
   const handleColorChange = (field, value) => {
     setTheme({
@@ -128,11 +137,20 @@ const ComponentPreview = ({
     setErrors(newErrors);
 
     if (valid) {
-      console.log("Saving theme:", theme);
-      // This would normally be an API call
-      setTimeout(() => {
-        toast.success("Theme saved successfully");
-      }, 500);
+      mutate(theme, {
+        onSuccess: (data) => {
+          if (data?.success) {
+            toast.success("Theme updated successfully");
+            revalidate(["themes"]);
+            closeModal();
+          } else {
+            toast.error(data?.message || "An error occurred");
+          }
+        },
+        onError: (err) => {
+          toast.error(err.message || "An error occurred");
+        },
+      });
     }
   };
 
@@ -455,8 +473,14 @@ const ComponentPreview = ({
           <Button variant="outline" onClick={resetTheme}>
             <Undo className="h-4 w-4 mr-1" /> Reset
           </Button>
-          <Button onClick={saveTheme}>
-            <Save className="h-4 w-4 mr-1" /> Save Theme
+          <Button onClick={saveTheme} disabled={isPending}>
+            {isPending ? (
+              <div className="animate-spin h-4 w-4 border-2 border-t-transparent rounded-full" />
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-1" /> Save Theme
+              </>
+            )}
           </Button>
         </div>
       </CardFooter>
