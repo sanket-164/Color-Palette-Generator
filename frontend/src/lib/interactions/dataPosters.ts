@@ -67,7 +67,7 @@ export class ThemeFns {
       for (const file of data.images) {
         formData.append("images", file);
       }
-      formData.append("compression", String(data.compression));
+      formData.append("compress", String(data.compression));
       const { data: resp } = await axiosInstance.post(
         "/user/generate-theme",
         formData,
